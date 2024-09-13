@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.routes import contacts
+from src.routes import contacts, auth
 
 app = FastAPI(
     title="Contact Management API",
@@ -8,6 +8,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
+app.include_router(auth.router, prefix='/api')
 app.include_router(contacts.router, prefix='/api')
 
 
