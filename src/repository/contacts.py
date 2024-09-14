@@ -25,7 +25,7 @@ async def create_contact(body: ContactCreate, user: User, db: Session) -> Contac
         phone=body.phone,
         birthday=body.birthday,
         additional_info=body.additional_info,
-        user=user
+        user_id=user.id
     )
     db.add(contact)
     db.commit()
@@ -54,7 +54,13 @@ async def update_contact(contact_id: int, body: ContactUpdate, user: User, db: S
     return contact
 
 
-async def search_contacts(db: Session, first_name: Optional[str], last_name: Optional[str], email: Optional[str], user: User):
+async def search_contacts(
+        db: Session,
+        first_name: Optional[str],
+        last_name: Optional[str],
+        email: Optional[str],
+        user: User
+) -> List[Contact]:
     query = db.query(Contact).filter(Contact.user_id == user.id)
 
     if first_name:
@@ -64,7 +70,8 @@ async def search_contacts(db: Session, first_name: Optional[str], last_name: Opt
     if email:
         query = query.filter(Contact.email.ilike(f'%{email}%'))
 
-    return query.all()
+    contacts = query.all()
+    return contacts
 
 
 def get_upcoming_birthdays(db: Session, user: User, days: int = 7) -> List[Contact]:
